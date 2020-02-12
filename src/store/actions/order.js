@@ -165,16 +165,16 @@ export const sendOrder = () => {
             delivery_cost: state.delivery_cost,
             products: state.cart,
           })
-          .then(() => {
+          .then(({ data }) => {
             dispatch({
               type: ORDER_SENT,
             })
-            return { sent: true }
+            return { sent: true, data }
           })
           .catch((e) => {
             dispatch({
               type: ORDER_NOT_SENT,
-              payload: e.response.data.errors ?? { address: '', contact: '' },
+              payload: e.response && e.response.data.errors ? e.response.data.errors : { address: '', contact: '' },
             })
             return { sent: true, error: e.response.data.message }
           })

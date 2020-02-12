@@ -32,7 +32,7 @@ const OrdersList = ({ orders }) => {
     return (
       <React.Fragment key={order.id}>
         <Divider variant='middle' className={classes.row} />
-        <Grid item xs={12} sm container spacing={1}>
+        <Grid item xs={12} sm container spacing={1} alignItems='center'>
           <Grid item md={6}>
             <Typography gutterBottom>{order.address}</Typography>
             <Typography variant='body2'>{order.contact}</Typography>

@@ -1,4 +1,4 @@
-import { ORDERS_FETCHED, ORDERS_LOADING, ORDERS_NOT_LOADED, ORDERS } from '../types'
+import { ORDERS_FETCHED, ORDERS_LOADING, ORDERS_NOT_LOADED, ORDERS, ORDERS_APPEND } from '../types'
 
 export const fetchOrders = () => {
   return (dispatch, getState, { api }) => {
@@ -26,6 +26,18 @@ export const fetchOrders = () => {
               type: ORDERS_NOT_LOADED,
             })
           })
+    }
+  }
+}
+
+export const addOrder = (order) => {
+  return (dispatch, getState) => {
+    const state = getState().orders
+    if (state.status === ORDERS.STATUS_OK) {
+      dispatch({
+        type: ORDERS_APPEND,
+        data: order,
+      })
     }
   }
 }

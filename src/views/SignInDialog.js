@@ -10,10 +10,10 @@ function SignInDialog({ isSignedIn, username }) {
   const dispatch = useDispatch()
   const history = useHistory()
   const [open, setOpen] = useState(false)
+  const [isLoading, setLoading] = useState(false)
   const [formData, setFormData] = useState({ email: '', password: '' })
   const [errors, setErrors] = useState({ email: '', password: '' })
   const [menuAnchor, setMenuAnchor] = useState(null)
-  const disableButtons = false
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -24,7 +24,9 @@ function SignInDialog({ isSignedIn, username }) {
   }
 
   const handleSignIn = () => {
+    setLoading(true)
     dispatch(login(formData)).then(({ success, errors }) => {
+      setLoading(false)
       if (errors) {
         setErrors(errors)
       } else {
@@ -97,7 +99,7 @@ function SignInDialog({ isSignedIn, username }) {
                 label='Login'
                 type='email'
                 value={formData.email}
-                disabled={disableButtons}
+                disabled={isLoading}
                 error={!!errors.email}
                 helperText={errors.email}
                 onChange={(e) => {
@@ -113,7 +115,7 @@ function SignInDialog({ isSignedIn, username }) {
                 label='Password'
                 type='password'
                 value={formData.password}
-                disabled={disableButtons}
+                disabled={isLoading}
                 error={!!errors.password}
                 helperText={errors.password}
                 onChange={(e) => {
@@ -124,11 +126,11 @@ function SignInDialog({ isSignedIn, username }) {
             </Box>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose} color='secondary'>
+            <Button onClick={handleClose} color='secondary' disabled={isLoading}>
               Cancel
             </Button>
-            <Button onClick={handleSignIn} color='primary'>
-              Sign in
+            <Button onClick={handleSignIn} color='primary' disabled={isLoading}>
+              {isLoading ? <CircularProgress size={30} color='inherit' /> : 'Sign in'}
             </Button>
           </DialogActions>
         </Dialog>

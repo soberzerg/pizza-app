@@ -1,4 +1,4 @@
-import { ORDERS, ORDERS_FETCHED, ORDERS_LOADING, ORDERS_NOT_LOADED } from '../types'
+import { ORDERS, ORDERS_FETCHED, ORDERS_LOADING, ORDERS_NOT_LOADED, ORDERS_APPEND } from '../types'
 
 const mutators = {
   [ORDERS_LOADING]: () => ({
@@ -15,6 +15,13 @@ const mutators = {
     status: ORDERS.STATUS_OK,
     data,
   }),
+
+  [ORDERS_APPEND]: ({ status, data }, item) => {
+    const _data = [...data]
+    _data.unshift(item)
+
+    return { status, data: _data }
+  },
 
   DEFAULT: (state) => state,
 }

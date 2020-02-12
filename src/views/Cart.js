@@ -23,6 +23,7 @@ import { PRODUCTS, ORDER } from '../store/types'
 import { fetchProducts } from '../store/actions/products'
 import { useHistory, NavLink } from 'react-router-dom'
 import { showAlert } from '../store/actions/alert'
+import { addOrder } from '../store/actions/orders'
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
@@ -270,13 +271,14 @@ const Cart = ({ isLoading, products, cart, order, delivery_cost, status, errors 
             color='primary'
             disabled={disableButtons || status !== ORDER.STATUS_READY}
             onClick={() => {
-              dispatch(sendOrder()).then(({ sent, error }) => {
+              dispatch(sendOrder()).then(({ sent, data, error }) => {
                 if (error) {
                   setActiveStep((prevActiveStep) => prevActiveStep - 1)
                   dispatch(showAlert(error))
                 } else if (sent) {
                   dispatch(clearCart())
                   dispatch(showAlert('Order successfully sent'))
+                  dispatch(addOrder(data))
                   history.push('/')
                 }
               })

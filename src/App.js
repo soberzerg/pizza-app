@@ -27,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
   },
   logo: {
     marginRight: theme.spacing(5),
+    textDecoration: 'none',
   },
   btn: {
     marginRight: theme.spacing(2),
@@ -77,7 +78,7 @@ function App({ cartTotal }) {
       <Container className={classes.wrapper}>
         <AppBar>
           <Toolbar display='flex' className={classes.toolbar}>
-            <Typography variant='h6' color='inherit' noWrap className={classes.logo}>
+            <Typography component={NavLink} to='/' variant='h6' color='inherit' noWrap className={classes.logo}>
               Pizza Menu
             </Typography>
             <Box className={classes.grow}>
@@ -119,7 +120,7 @@ function App({ cartTotal }) {
                 to='/history'
                 startIcon={<ViewList />}
               >
-                Order History
+                Orders History
               </Button>
             </Box>
             <SignInDialog />
