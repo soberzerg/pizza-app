@@ -1,18 +1,21 @@
 import { AUTH_SET_TOKEN, AUTH_CLEAR_TOKEN } from '../types'
 
-const STORAGE_KEY = 'auth-token'
+const AUTH_STORAGE_KEY = 'auth-token'
 
 export const checkAuth = () => {
-  return (dispatch) => {
-    const token = localStorage.getItem('token')
-    return token
-      ? dispatch({
-          type: AUTH_SET_TOKEN,
-          token,
-        })
-      : dispatch({
-          type: AUTH_CLEAR_TOKEN,
-        })
+  return (dispatch, getState, { api }) => {
+    const token = localStorage.getItem(AUTH_STORAGE_KEY)
+    if (token) {
+      api.defaults.headers.common.Authorization = `Bearer ${token}`
+    }
+    dispatch(
+      token
+        ? {
+            type: AUTH_SET_TOKEN,
+            token,
+          }
+        : { type: AUTH_CLEAR_TOKEN }
+    )
   }
 }
 
@@ -28,12 +31,16 @@ export const login = (formData) => {
 
         api.defaults.headers.common.Authorization = `Bearer ${token}`
 
-        localStorage.setItem(STORAGE_KEY, token)
+        localStorage.setItem(AUTH_STORAGE_KEY, token)
 
-        return dispatch({
+        dispatch({
           type: AUTH_SET_TOKEN,
           token,
         })
+        return { success: true }
+      })
+      .catch((e) => {
+        return { errors: e.response.data.errors }
       })
   }
 }
@@ -46,7 +53,7 @@ export const logout = (send = true) => {
 
     delete api.defaults.headers.common.Authorization
 
-    localStorage.removeItem(STORAGE_KEY)
+    localStorage.removeItem(AUTH_STORAGE_KEY)
 
     return dispatch({
       type: AUTH_CLEAR_TOKEN,

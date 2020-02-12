@@ -14,9 +14,13 @@ const CART_MIN_QUANTITY = 0
 const CART_MAX_QUANTITY = 99
 const CART_STORAGE_KEY = 'cart'
 
-export const clearCart = () => ({
-  type: ORDER_CLEAR_CART,
-})
+export const clearCart = () => {
+  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify([]))
+
+  return {
+    type: ORDER_CLEAR_CART,
+  }
+}
 
 export const checkCart = () => {
   return (dispatch, getState) => {
@@ -66,7 +70,11 @@ export const updateCartItem = (item, quantity) => {
     const cart = [...getState().order.cart]
     const ci = cart.find((a) => a.id === item.id)
     if (ci) {
-      cart[cart.indexOf(ci)].quantity = quantity
+      if (quantity) {
+        cart[cart.indexOf(ci)].quantity = quantity
+      } else {
+        cart.splice(cart.indexOf(ci), 1)
+      }
     }
 
     dispatch({
@@ -83,7 +91,7 @@ export const removeCartItem = (item) => {
     const cart = [...getState().order.cart]
     const ci = cart.find((a) => a.id === item.id)
     if (ci) {
-      delete cart[cart.indexOf(ci)]
+      cart.splice(cart.indexOf(ci), 1)
     }
 
     dispatch({
@@ -95,11 +103,28 @@ export const removeCartItem = (item) => {
   }
 }
 
+export const resetOrderDetails = () => ({
+  type: ORDER_UPDATE_DETAILS,
+  payload: {},
+})
+
+export const setOrderDetails = (data) => {
+  return (dispatch, getState, { api, params }) => {
+    const current = getState().order.data
+
+    dispatch({
+      type: ORDER_UPDATE_DETAILS,
+      payload: { ...current, ...data },
+    })
+  }
+}
+
 export const fetchDeliveryCost = () => {
   return (dispatch, getState, { api }) => {
     const state = getState().order
     switch (state.status) {
       case ORDER.STATUS_IDLE:
+      case ORDER.STATUS_ERROR:
         dispatch({
           type: ORDER_GET_DELIVERY_COST,
         })
@@ -124,11 +149,6 @@ export const fetchDeliveryCost = () => {
   }
 }
 
-export const setOrderDetails = (data) => ({
-  type: ORDER_UPDATE_DETAILS,
-  payload: data,
-})
-
 export const sendOrder = () => {
   return (dispatch, getState, { api, params }) => {
     const state = getState().order
@@ -149,15 +169,20 @@ export const sendOrder = () => {
             dispatch({
               type: ORDER_SENT,
             })
+            return { sent: true }
           })
-          .catch((errors) => {
+          .catch((e) => {
             dispatch({
               type: ORDER_NOT_SENT,
-              payload: errors,
+              payload: e.response.data.errors ?? { address: '', contact: '' },
             })
+            return { sent: true, error: e.response.data.message }
           })
 
       default:
+        return new Promise((resolve) => {
+          resolve({ sent: false })
+        })
     }
   }
 }

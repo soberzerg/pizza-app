@@ -14,11 +14,12 @@ import {
   IconButton,
 } from '@material-ui/core'
 import { useDispatch, connect } from 'react-redux'
-import { AddShoppingCart, Remove, Add } from '@material-ui/icons'
+import { AddShoppingCart, Remove, Add, ShoppingCart } from '@material-ui/icons'
 
 import { fetchProducts } from '../store/actions/products'
 import { PRODUCTS } from '../store/types'
 import { addToCart, updateCartItem } from '../store/actions/order'
+import { NavLink } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
@@ -46,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     width: 30,
   },
   input: {
-    width: 60,
+    width: 30,
   },
 }))
 
@@ -66,12 +67,15 @@ const ProductList = ({ cart, products }) => {
               {product.name}
             </Typography>
             <Typography gutterBottom variant='h5' className={classes.price}>
-              ${product.price}
+              ${Number(product.price).toFixed(2)}
             </Typography>
           </CardContent>
           <CardActions>
             {ci.quantity ? (
               <div>
+                <Button size='small' color='primary' startIcon={<ShoppingCart />} className={classes.btn} component={NavLink} to='/cart'>
+                  Go to cart
+                </Button>
                 <IconButton
                   size='small'
                   color='primary'
@@ -85,6 +89,7 @@ const ProductList = ({ cart, products }) => {
                   type='number'
                   value={ci.quantity}
                   className={classes.input}
+                  margin='dense'
                   onChange={(e) => dispatch(updateCartItem(product, Number(e.target.value)))}
                 />
                 <IconButton size='small' color='primary' className={classes.btnInput} onClick={(e) => dispatch(addToCart(product))}>
@@ -92,15 +97,17 @@ const ProductList = ({ cart, products }) => {
                 </IconButton>
               </div>
             ) : (
-              <Button
-                size='small'
-                color='primary'
-                startIcon={<AddShoppingCart />}
-                className={classes.btn}
-                onClick={(e) => dispatch(addToCart(product))}
-              >
-                Add to cart
-              </Button>
+              <div>
+                <Button
+                  size='small'
+                  color='primary'
+                  startIcon={<AddShoppingCart />}
+                  className={classes.btn}
+                  onClick={(e) => dispatch(addToCart(product))}
+                >
+                  Add to cart
+                </Button>
+              </div>
             )}
           </CardActions>
         </Card>
@@ -133,7 +140,7 @@ const Catalog = ({ isLoading, products, cart }) => {
 
 const mapStateToProps = (state) => {
   return {
-    isLoading: state.products.status === PRODUCTS.STATUS_LOADING,
+    isLoading: state.products.status !== PRODUCTS.STATUS_OK,
     products: state.products.data,
     cart: state.order.cart,
   }

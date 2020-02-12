@@ -13,8 +13,11 @@ import {
 const initialState = {
   status: ORDER.STATUS_IDLE,
   cart: [],
-  data: {},
-  delivery_cost: null,
+  data: {
+    address: '',
+    contact: '',
+  },
+  delivery_cost: NaN,
   errors: {},
 }
 
