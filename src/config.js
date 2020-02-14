@@ -4,6 +4,8 @@ export const development = {
   CLIENT_SECRET: 'nRDApZPWeTRDrVGWQEMFfWoJkQ6W6ujm5usQv0Xl',
 }
 
+export const test = development
+
 export const production = {
   API_HOST: 'https://pizza-backend2020.herokuapp.com/api',
   CLIENT_ID: 1,
